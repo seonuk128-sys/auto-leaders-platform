@@ -1,5 +1,4 @@
 const express = require('express');
-const Database = require('better-sqlite3');
 const path = require('path');
 const nodemailer = require('nodemailer');
 require('dotenv').config();
@@ -32,7 +31,10 @@ async function sendNotification(data) {
         detailsText = `
 - 고객 유형: ${data.customerType}
 - 관심 차종: ${data.carModel}
-- 계약 기간: ${data.contractPeriod}개월`;
+- 계약 기간: ${data.contractPeriod}개월
+- 선납금: ${data.prepayment}만원
+- 주행거리: ${data.distance}만km
+- 상품종류: ${data.serviceType}`;
     } else {
         detailsText = `
 - 상담 내용: ${data.content}`;
@@ -49,7 +51,7 @@ async function sendNotification(data) {
 - 성함: ${data.name}
 - 연락처: ${data.phone}${detailsText}
 
-데이터베이스를 확인해 주세요.
+본 메일은 실시간 알림 서비스입니다.
         `
     };
 
@@ -61,73 +63,32 @@ async function sendNotification(data) {
     }
 }
 
-// 데이터베이스 연결 및 초기화
-const db = new Database(path.join(__dirname, 'database.sqlite'));
-
-// 테이블 생성
-db.exec(`
-    CREATE TABLE IF NOT EXISTS customers (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL,
-        phone TEXT NOT NULL,
-        birthdate TEXT NOT NULL,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    )
-`);
-
-db.exec(`
-    CREATE TABLE IF NOT EXISTS consultations (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        type TEXT NOT NULL,
-        name TEXT NOT NULL,
-        phone TEXT NOT NULL,
-        customer_type TEXT,
-        car_model TEXT,
-        contract_period TEXT,
-        content TEXT,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    )
-`);
-
-console.log('✅ 데이터베이스 장부 준비 완료!');
+console.log('🚀 서버 준비 중...');
 
 // 신규 상담 신청 API
 app.post('/api/consultations', (req, res) => {
-    const { type, name, phone, customerType, carModel, contractPeriod, content } = req.body;
+    const data = req.body;
 
     try {
-        const stmt = db.prepare(
-            `INSERT INTO consultations (type, name, phone, customer_type, car_model, contract_period, content) 
-             VALUES (?, ?, ?, ?, ?, ?, ?)`
-        );
-        stmt.run(type, name, phone, customerType, carModel, contractPeriod, content);
-        
-        // 정보 저장 후 이메일 알림 보내기 (비동기로 실행)
-        sendNotification({ type, name, phone, customerType, carModel, contractPeriod, content });
+        // 정보 수신 즉시 이메일 알림 보내기
+        sendNotification(data);
 
         res.status(200).json({ message: '성공적으로 신청되었습니다.' });
-        console.log(`📝 새 상담 등록 [${type}]: ${name} (${phone})`);
+        console.log(`📝 새 상담 알림 발송 [${data.type}]: ${data.name} (${data.phone})`);
     } catch (error) {
-        console.error('저장 중 오류 발생:', error);
+        console.error('처리 중 오류 발생:', error);
         res.status(500).json({ message: '신청 중 문제가 발생했습니다.' });
     }
 });
 
-// 기존 API 유지
+// 기존 API 유지 (이전 양식 대응)
 app.post('/api/customers', (req, res) => {
-    const { name, phone, birthdate } = req.body;
-
+    const data = req.body;
     try {
-        const stmt = db.prepare('INSERT INTO customers (name, phone, birthdate) VALUES (?, ?, ?)');
-        stmt.run(name, phone, birthdate);
-        
-        sendNotification({ name, phone, birthdate });
-
+        sendNotification({ ...data, type: 'old' });
         res.status(200).json({ message: '성공적으로 저장되었습니다.' });
-        console.log(`📝 새 고객 등록: ${name} (${phone})`);
     } catch (error) {
-        console.error('저장 중 오류 발생:', error);
-        res.status(500).json({ message: '저장 중 문제가 발생했습니다.' });
+        res.status(500).json({ message: '오류 발생' });
     }
 });
 
@@ -137,5 +98,5 @@ app.get('*', (req, res) => {
 });
 
 app.listen(port, () => {
-    console.log(`🚀 서버가 포트 ${port} 에서 돌아가고 있습니다!`);
+    console.log(`🚀 서버가 포트 ${port} 에서 안정적으로 돌아가고 있습니다!`);
 });
