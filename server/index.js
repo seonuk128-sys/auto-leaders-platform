@@ -1,6 +1,5 @@
 const express = require('express');
-const { open } = require('sqlite');
-const sqlite3 = require('sqlite3');
+const Database = require('better-sqlite3');
 const path = require('path');
 const nodemailer = require('nodemailer');
 require('dotenv').config();
@@ -62,99 +61,81 @@ async function sendNotification(data) {
     }
 }
 
-// 데이터를 주고받기 위한 설정 (JSON 형식 사용)
-app.use(express.json());
+// 데이터베이스 연결 및 초기화
+const db = new Database(path.join(__dirname, 'database.sqlite'));
 
-// 데이터베이스 연결 및 초기화 함수
-async function setupDatabase() {
-    const db = await open({
-        filename: path.join(__dirname, 'database.sqlite'),
-        driver: sqlite3.Database
-    });
+// 테이블 생성
+db.exec(`
+    CREATE TABLE IF NOT EXISTS customers (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        phone TEXT NOT NULL,
+        birthdate TEXT NOT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+`);
 
-    // 기존 customers 테이블 유지 (필요 시)
-    await db.exec(`
-        CREATE TABLE IF NOT EXISTS customers (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL,
-            phone TEXT NOT NULL,
-            birthdate TEXT NOT NULL,
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-        )
-    `);
+db.exec(`
+    CREATE TABLE IF NOT EXISTS consultations (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        type TEXT NOT NULL,
+        name TEXT NOT NULL,
+        phone TEXT NOT NULL,
+        customer_type TEXT,
+        car_model TEXT,
+        contract_period TEXT,
+        content TEXT,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+`);
 
-    // 신규 상담 신청 테이블 생성
-    await db.exec(`
-        CREATE TABLE IF NOT EXISTS consultations (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            type TEXT NOT NULL, -- 'rent' 또는 'insurance'
-            name TEXT NOT NULL,
-            phone TEXT NOT NULL,
-            customer_type TEXT, -- 개인, 개인사업자, 법인
-            car_model TEXT,
-            contract_period TEXT,
-            content TEXT,
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-        )
-    `);
+console.log('✅ 데이터베이스 장부 준비 완료!');
 
-    return db;
-}
+// 신규 상담 신청 API
+app.post('/api/consultations', (req, res) => {
+    const { type, name, phone, customerType, carModel, contractPeriod, content } = req.body;
 
-// 서버 시작
-(async () => {
-    const db = await setupDatabase();
-    console.log('✅ 데이터베이스 장부 준비 완료!');
+    try {
+        const stmt = db.prepare(
+            `INSERT INTO consultations (type, name, phone, customer_type, car_model, contract_period, content) 
+             VALUES (?, ?, ?, ?, ?, ?, ?)`
+        );
+        stmt.run(type, name, phone, customerType, carModel, contractPeriod, content);
+        
+        // 정보 저장 후 이메일 알림 보내기 (비동기로 실행)
+        sendNotification({ type, name, phone, customerType, carModel, contractPeriod, content });
 
-    // 신규 상담 신청 API
-    app.post('/api/consultations', async (req, res) => {
-        const { type, name, phone, customerType, carModel, contractPeriod, content } = req.body;
+        res.status(200).json({ message: '성공적으로 신청되었습니다.' });
+        console.log(`📝 새 상담 등록 [${type}]: ${name} (${phone})`);
+    } catch (error) {
+        console.error('저장 중 오류 발생:', error);
+        res.status(500).json({ message: '신청 중 문제가 발생했습니다.' });
+    }
+});
 
-        try {
-            await db.run(
-                `INSERT INTO consultations (type, name, phone, customer_type, car_model, contract_period, content) 
-                 VALUES (?, ?, ?, ?, ?, ?, ?)`,
-                [type, name, phone, customerType, carModel, contractPeriod, content]
-            );
-            
-            // 정보 저장 후 이메일 알림 보내기
-            await sendNotification({ type, name, phone, customerType, carModel, contractPeriod, content });
+// 기존 API 유지
+app.post('/api/customers', (req, res) => {
+    const { name, phone, birthdate } = req.body;
 
-            res.status(200).json({ message: '성공적으로 신청되었습니다.' });
-            console.log(`📝 새 상담 등록 [${type}]: ${name} (${phone})`);
-        } catch (error) {
-            console.error('저장 중 오류 발생:', error);
-            res.status(500).json({ message: '신청 중 문제가 발생했습니다.' });
-        }
-    });
+    try {
+        const stmt = db.prepare('INSERT INTO customers (name, phone, birthdate) VALUES (?, ?, ?)');
+        stmt.run(name, phone, birthdate);
+        
+        sendNotification({ name, phone, birthdate });
 
-    // 기존 API 유지
-    app.post('/api/customers', async (req, res) => {
-        const { name, phone, birthdate } = req.body;
+        res.status(200).json({ message: '성공적으로 저장되었습니다.' });
+        console.log(`📝 새 고객 등록: ${name} (${phone})`);
+    } catch (error) {
+        console.error('저장 중 오류 발생:', error);
+        res.status(500).json({ message: '저장 중 문제가 발생했습니다.' });
+    }
+});
 
-        try {
-            await db.run(
-                'INSERT INTO customers (name, phone, birthdate) VALUES (?, ?, ?)',
-                [name, phone, birthdate]
-            );
-            
-            // 정보 저장 후 이메일 알림 보내기
-            await sendNotification({ name, phone, birthdate });
+// 모든 알 수 없는 경로는 클라이언트(React)의 index.html로 보냅니다.
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../client/dist/index.html'));
+});
 
-            res.status(200).json({ message: '성공적으로 저장되었습니다.' });
-            console.log(`📝 새 고객 등록: ${name} (${phone})`);
-        } catch (error) {
-            console.error('저장 중 오류 발생:', error);
-            res.status(500).json({ message: '저장 중 문제가 발생했습니다.' });
-        }
-    });
-
-    // 모든 알 수 없는 경로는 클라이언트(React)의 index.html로 보냅니다. (새로고침 대응)
-    app.get('*', (req, res) => {
-        res.sendFile(path.join(__dirname, '../client/dist/index.html'));
-    });
-
-    app.listen(port, () => {
-        console.log(`🚀 서버가 포트 ${port} 에서 돌아가고 있습니다!`);
-    });
-})();
+app.listen(port, () => {
+    console.log(`🚀 서버가 포트 ${port} 에서 돌아가고 있습니다!`);
+});
