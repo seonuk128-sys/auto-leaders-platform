@@ -1,0 +1,393 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #f4f7f9;
+  color: #333;
+}
+
+.app-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.main-header {
+  background-color: #2c3e50;
+  color: white;
+  padding: 1rem 0;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.main-header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.content {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 2rem 1rem;
+}
+
+.container {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  width: 100%;
+  max-width: 500px;
+}
+
+h2 {
+  margin-top: 0;
+  color: #2c3e50;
+  border-bottom: 2px solid #3498db;
+  padding-bottom: 0.5rem;
+}
+
+p {
+  color: #666;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #444;
+}
+
+.form-group input[type="text"],
+.form-group input[type="tel"],
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+.form-group textarea {
+  resize: vertical;
+}
+
+.radio-group {
+  display: flex;
+  gap: 1.5rem;
+  padding: 0.5rem 0;
+}
+
+.radio-group label {
+  font-weight: normal;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 1rem;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.submit-btn:hover {
+  background-color: #2980b9;
+}
+
+.insurance-btn {
+  background-color: #27ae60;
+}
+
+.insurance-btn:hover {
+  background-color: #219150;
+}
+
+.message {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  border-radius: 6px;
+  text-align: center;
+  font-weight: 600;
+}
+
+/* 현대적인 폼 스타일 (이미지 분석 반영) */
+.logo-container {
+  text-align: center;
+  margin-bottom: 2rem;
+  background-color: #1a1515; 
+  border-radius: 12px;
+  padding: 30px 20px; /* 로고가 넓게 차지하도록 패딩 확대 */
+}
+
+.logo-subtitle {
+  color: #f8f9fa; /* 로고 글씨와 비슷한 밝은 그레이 화이트 */
+  margin-top: 1.2rem;
+  font-size: 1.05rem;
+  font-weight: 500;
+  letter-spacing: -0.05rem; /* 자간을 살짝 좁혀 이질감 해소 */
+  font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+  opacity: 0.95;
+}
+
+.brand-logo {
+  max-width: 90%; /* 화면에 가득 차는 느낌을 주기 위해 너비 조정 */
+  height: auto;
+  max-height: 250px; 
+  display: block;
+  margin: 0 auto;
+}
+
+.subtitle {
+  margin-bottom: 2rem;
+  font-size: 1rem;
+  color: #888;
+}
+
+.section-label {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 1rem !important;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.relative {
+  position: relative;
+}
+
+.help-icon {
+  display: inline-flex;
+  width: 18px;
+  height: 18px;
+  background-color: #e0e0e0;
+  color: white;
+  border-radius: 50%;
+  font-size: 12px;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.help-icon:hover {
+  background-color: #ccc;
+}
+
+/* 툴팁 말풍선 스타일 */
+.tooltip {
+  position: absolute;
+  top: 35px;
+  left: 0;
+  right: 0;
+  background-color: #444;
+  color: white;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: normal;
+  line-height: 1.4;
+  z-index: 100;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.tooltip::after {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 20px;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 8px solid #444;
+}
+
+.label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.value-display {
+  font-weight: 700;
+  color: #333;
+}
+
+/* 카드 셀렉터 스타일 */
+.card-selector {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-top: 15px; /* 배지가 잘리지 않도록 상단 여백 추가 */
+  padding-bottom: 10px;
+}
+
+.card-item {
+  flex: 1;
+  min-width: 80px;
+  height: 80px;
+  border: 2px solid #f0f0f0;
+  border-radius: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 600;
+  color: #666;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s;
+  background: white;
+  z-index: 1; /* 배지보다 뒤에 오도록 설정 */
+}
+
+.card-item.active {
+  border-color: #ff6b35; /* 주황색 강조 */
+  background-color: #fff9f6;
+  color: #ff6b35;
+}
+
+.badge {
+  position: absolute;
+  top: -12px; /* 위치 미세 조정 */
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #ff6b35;
+  color: white;
+  font-size: 10px;
+  padding: 2px 10px;
+  border-radius: 10px;
+  font-weight: bold;
+  z-index: 2; /* 카드 위로 올라오게 설정 */
+  white-space: nowrap; /* 글씨가 씹히지 않게 설정 */
+  box-shadow: 0 2px 4px rgba(255,107,53,0.3);
+}
+
+/* 큰 카드 셀렉터 (장기렌트 vs 리스) */
+.card-selector-large {
+  display: flex;
+  gap: 15px;
+}
+
+.card-item-large {
+  flex: 1;
+  padding: 1.5rem;
+  border: 2px solid #f0f0f0;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: white;
+  text-align: center;
+}
+
+.card-item-large.active {
+  border-color: #ff6b35;
+  background-color: #fff9f6;
+}
+
+.card-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.card-item-large.active .card-title {
+  color: #ff6b35;
+}
+
+.card-desc {
+  font-size: 0.85rem;
+  color: #888;
+  line-height: 1.4;
+}
+
+/* 구분선 */
+.form-divider {
+  height: 1px;
+  background-color: #eee;
+  margin: 2rem 0;
+}
+
+/* 모던 입력창 */
+.modern-input {
+  border: none !important;
+  border-bottom: 2px solid #eee !important;
+  border-radius: 0 !important;
+  padding: 1rem 0 !important;
+  font-size: 1.1rem !important;
+}
+
+.modern-input:focus {
+  outline: none;
+  border-bottom-color: #ff6b35 !important;
+}
+
+/* 모던 라디오 버튼 */
+.radio-group-modern {
+  display: flex;
+  gap: 10px;
+}
+
+.radio-label {
+  flex: 1;
+  padding: 0.8rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  text-align: center;
+  cursor: pointer;
+  font-weight: 600;
+  color: #666;
+}
+
+.radio-label.checked {
+  background-color: #2c3e50;
+  color: white;
+  border-color: #2c3e50;
+}
+
+.radio-label input {
+  display: none;
+}
+
+/* 모던 버튼 */
+.modern-btn {
+  background-color: #ff6b35 !important;
+  padding: 1.2rem !important;
+  border-radius: 12px !important;
+  margin-top: 1rem;
+}
+
+.modern-btn:hover {
+  background-color: #e85a24 !important;
+}
+
+.main-footer {
+  text-align: center;
+  padding: 1rem;
+  font-size: 0.85rem;
+  color: #888;
+  background-color: #fff;
+}
