@@ -93,7 +93,7 @@ app.post('/api/customers', (req, res) => {
 });
 
 // 모든 알 수 없는 경로는 클라이언트(React)의 index.html로 보냅니다.
-app.get('*', (req, res) => {
+app.get('/*', (req, res) => {
     res.sendFile(path.join(__dirname, '../client/dist/index.html'));
 });
 
