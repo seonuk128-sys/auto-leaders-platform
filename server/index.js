@@ -12,18 +12,19 @@ app.use(express.json());
 // 정적 파일 제공 (빌드된 리액트 파일)
 app.use(express.static(path.join(__dirname, '../client/dist')));
 
-// 이메일 발송 설정 (Render 환경에 최적화된 587 포트 사용)
+// 이메일 발송 설정 (IPv4 연결 강제 및 보안 최적화)
 const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
     port: 587,
-    secure: false, // 587 포트는 false로 설정
+    secure: false,
     auth: {
         user: 'seonuk128@gmail.com',
         pass: 'idrsnmltlhttdtab'
     },
     tls: {
-        rejectUnauthorized: false // 보안 인증서 엄격 검사 완화 (연결성 우선)
-    }
+        rejectUnauthorized: false
+    },
+    family: 4 // IPv4 연결 강제 (IPv6 오류 방지)
 });
 
 // 이메일 보내는 함수
