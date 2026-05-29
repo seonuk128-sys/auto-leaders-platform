@@ -1,7 +1,13 @@
 const express = require('express');
 const path = require('path');
 const nodemailer = require('nodemailer');
+const dns = require('dns');
 require('dotenv').config();
+
+// DNS 해석 시 IPv4를 우선하도록 설정 (Render/IPv6 환경 문제 해결)
+if (dns.setDefaultResultOrder) {
+    dns.setDefaultResultOrder('ipv4first');
+}
 
 const app = express();
 const port = process.env.PORT || 5001;
