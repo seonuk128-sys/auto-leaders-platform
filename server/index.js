@@ -12,12 +12,12 @@ app.use(express.json());
 // 정적 파일 제공 (빌드된 리액트 파일)
 app.use(express.static(path.join(__dirname, '../client/dist')));
 
-// 이메일 발송 설정
+// 이메일 발송 설정 (배포 환경을 위해 직접 설정)
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
+        user: 'seonuk128@gmail.com',
+        pass: 'jbdmxvomhofvegeo' // 공백 없는 16자리 앱 비밀번호
     }
 });
 
@@ -41,8 +41,8 @@ async function sendNotification(data) {
     }
 
     const mailOptions = {
-        from: process.env.EMAIL_USER,
-        to: process.env.RECEIVER_EMAIL,
+        from: 'seonuk128@gmail.com',
+        to: 'seonuk128@gmail.com',
         subject: `🔔 ${title}`,
         text: `
 새로운 상담 신청이 접수되었습니다.
