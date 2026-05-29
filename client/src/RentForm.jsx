@@ -32,6 +32,7 @@ function RentForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      // 상대 경로 대신 명확한 호출을 위해 /api 주소 사용
       const response = await axios.post('/api/consultations', formData);
       if (response.status === 200) {
         setMessage('신청완료! 빠른 시간 내에 상담 연락 드리겠습니다.');
