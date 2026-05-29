@@ -12,9 +12,11 @@ app.use(express.json());
 // 정적 파일 제공 (빌드된 리액트 파일)
 app.use(express.static(path.join(__dirname, '../client/dist')));
 
-// 이메일 발송 설정 (Gmail 전용 서비스 설정으로 변경)
+// 이메일 발송 설정 (IPv4 강제 및 587 포트 명시)
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 587,
+    secure: false, // 587 포트는 false, 465 포트는 true
     auth: {
         user: 'seonuk128@gmail.com',
         pass: 'idrsnmltlhttdtab'
