@@ -12,20 +12,18 @@ app.use(express.json());
 // 정적 파일 제공 (빌드된 리액트 파일)
 app.use(express.static(path.join(__dirname, '../client/dist')));
 
-// 이메일 발송 설정 (IPv4 연결 강제 및 보안 최적화)
+// 이메일 발송 설정 (Gmail 전용 서비스 설정으로 변경)
 const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 587,
-    secure: false,
+    service: 'gmail',
     auth: {
         user: 'seonuk128@gmail.com',
         pass: 'idrsnmltlhttdtab'
     },
-    tls: {
-        rejectUnauthorized: false
-    },
-    family: 4 // IPv4 연결 강제 (IPv6 오류 방지)
+    family: 4 // 반드시 IPv4 사용
 });
+
+// 연결 테스트용 로그
+console.log('📧 이메일 전송기 준비 완료 (IPv4 강제 모드)');
 
 // 이메일 보내는 함수
 async function sendNotification(data) {
