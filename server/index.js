@@ -12,14 +12,17 @@ app.use(express.json());
 // 정적 파일 제공 (빌드된 리액트 파일)
 app.use(express.static(path.join(__dirname, '../client/dist')));
 
-// 이메일 발송 설정 (최신 앱 비밀번호 적용)
+// 이메일 발송 설정 (Render 환경에 최적화된 587 포트 사용)
 const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
-    port: 465,
-    secure: true, // SSL 사용
+    port: 587,
+    secure: false, // 587 포트는 false로 설정
     auth: {
         user: 'seonuk128@gmail.com',
-        pass: 'idrsnmltlhttdtab' // 새로 발급된 16자리 앱 비밀번호
+        pass: 'idrsnmltlhttdtab'
+    },
+    tls: {
+        rejectUnauthorized: false // 보안 인증서 엄격 검사 완화 (연결성 우선)
     }
 });
 
