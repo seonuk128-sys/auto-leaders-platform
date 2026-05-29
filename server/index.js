@@ -12,12 +12,14 @@ app.use(express.json());
 // 정적 파일 제공 (빌드된 리액트 파일)
 app.use(express.static(path.join(__dirname, '../client/dist')));
 
-// 이메일 발송 설정 (배포 환경을 위해 직접 설정)
+// 이메일 발송 설정 (최신 앱 비밀번호 적용)
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true, // SSL 사용
     auth: {
         user: 'seonuk128@gmail.com',
-        pass: 'jbdmxvomhofvegeo' // 공백 없는 16자리 앱 비밀번호
+        pass: 'idrsnmltlhttdtab' // 새로 발급된 16자리 앱 비밀번호
     }
 });
 
@@ -41,7 +43,7 @@ async function sendNotification(data) {
     }
 
     const mailOptions = {
-        from: 'seonuk128@gmail.com',
+        from: '"오토리더스 알림" <seonuk128@gmail.com>',
         to: 'seonuk128@gmail.com',
         subject: `🔔 ${title}`,
         text: `
@@ -56,10 +58,10 @@ async function sendNotification(data) {
     };
 
     try {
-        await transporter.sendMail(mailOptions);
-        console.log(`📧 [${data.type}] 알림 이메일이 발송되었습니다.`);
+        const info = await transporter.sendMail(mailOptions);
+        console.log(`✅ 이메일 발송 성공! ID: ${info.messageId}`);
     } catch (error) {
-        console.error('이메일 발송 중 오류:', error);
+        console.error('❌ 이메일 발송 실패:', error);
     }
 }
 
